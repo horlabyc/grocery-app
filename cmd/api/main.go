@@ -11,7 +11,9 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/horlabyc/grocery-app/internal/handlers"
 	"github.com/horlabyc/grocery-app/internal/middleware"
+	"github.com/horlabyc/grocery-app/internal/services"
 	"github.com/horlabyc/grocery-app/internal/storage/postgres"
 	"github.com/horlabyc/grocery-app/internal/utils"
 	"github.com/joho/godotenv"
@@ -54,6 +56,19 @@ func main() {
 		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
 	})
+
+	// Initialize Repositories
+	shopRepo := postgres.NewShopRepo(db)
+
+	// Services
+	shopService := services.NewShopService(shopRepo)
+
+	// Handlers
+	shopHandler := handlers.NewShopHandler(shopService)
+
+	//Shop Routes
+	router.HandleFunc("/shops", shopHandler.CreateShop).Methods(http.MethodPost)
+	router.HandleFunc("/shops", shopHandler.GetAll).Methods(http.MethodGet)
 
 	serverPort := utils.GetEnv("SERVER_PORT", "8080")
 
