@@ -49,3 +49,37 @@ func (r *ShopRepo) GetAll(ctx context.Context) ([]models.Shop, error) {
 	}
 	return shops, nil
 }
+
+func (r *ShopRepo) GetByID(ctx context.Context, id int64) (*models.Shop, error) {
+	query := `
+		SELECT id, name, address, description, contact_phone, created_at, updated_at
+		FROM shops
+		WHERE id = $1
+	`
+
+	shop := &models.Shop{}
+	err := r.db.GetContext(ctx, &shop, query, id)
+	if err != nil {
+		return nil, err
+	}
+	return shop, nil
+}
+
+func (r *ShopRepo) Update(ctx context.Context, shop *models.Shop) error {
+	query := `
+		UPDATE shops
+		SET name = $1, address = $2, description = $3, contact_phone = $4
+		WHERE id = $5
+		RETURNING updated_at
+	`
+
+	row := r.db.QueryRowContext(
+		ctx,
+		query,
+		shop.Name,
+		shop.Address,
+		shop.Description,
+		shop.ContactPhone,
+	)
+	return row.Scan(&shop.UpdatedAt)
+}
