@@ -1,0 +1,52 @@
+# docker-compose.dev.yml
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: grocery-app-dev
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=grocery_app
+      - DB_SSLMODE=disable
+      - SERVER_PORT=8080
+    restart: unless-stopped
+    volumes:
+      - ./:/app
+    networks:
+      - grocery-network
+    command: sh -c "
+      sleep 5 &&
+      migrate -path=./migrations -database postgres://postgres:postgres@db:5432/grocery_app?sslmode=disable up &&
+      air"
+
+  db:
+    image: postgres:15-alpine
+    container_name: grocery-db-dev
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=grocery_app
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    networks:
+      - grocery-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data_dev:
+
+networks:
+  grocery-network:
+    driver: bridge

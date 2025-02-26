@@ -11,5 +11,5 @@ type ShopRepository interface {
 	GetAll(ctx context.Context) ([]models.Shop, error)
 	GetByID(cxt context.Context, id int64) (*models.Shop, error)
 	Update(ctx context.Context, shop *models.Shop) error
-	// Delete(ctx context.Context, id int64) error
+	Delete(ctx context.Context, id int64) error
 }

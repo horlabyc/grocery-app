@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"errors"
 
 	"github.com/horlabyc/grocery-app/internal/domain/models"
 	"github.com/horlabyc/grocery-app/internal/domain/repositories"
@@ -31,13 +30,9 @@ func (s *ShopService) GetAllShops(ct context.Context) ([]models.Shop, error) {
 }
 
 func (s *ShopService) UpdateShop(ct context.Context, shop *models.Shop) error {
-	existingShop, err := s.repo.GetByID(ct, shop.ID)
-	if err != nil {
-		return errors.New("shop not found")
-	}
-	return s.repo.Update(ct, existingShop)
+	return s.repo.Update(ct, shop)
 }
 
-// func (s *ShopService) DeleteShop(ct context.Context, id int64) error {
-// 	return s.repo.Delete(ct, id)
-// }
+func (s *ShopService) DeleteShop(ct context.Context, id int64) error {
+	return s.repo.Delete(ct, id)
+}

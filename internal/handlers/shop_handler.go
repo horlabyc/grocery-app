@@ -60,7 +60,7 @@ func (h *ShopHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	}
 	shop, err := h.service.GetShopByID(r.Context(), id)
 	if err != nil {
-		fmt.Println("Error getting all shop: ", err)
+		fmt.Println("Shop not found: ", err)
 		http.Error(w, "Shop not found", http.StatusNotFound)
 		return
 	}
@@ -92,4 +92,20 @@ func (h *ShopHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(shop)
+}
+
+func (h *ShopHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.ParseInt(vars["id"], 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.service.DeleteShop(r.Context(), id); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

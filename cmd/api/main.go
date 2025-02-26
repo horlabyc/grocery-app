@@ -71,6 +71,7 @@ func main() {
 	router.HandleFunc("/shops", shopHandler.GetAll).Methods(http.MethodGet)
 	router.HandleFunc("/shops/{id:[0-9]+}", shopHandler.GetByID).Methods(http.MethodGet)
 	router.HandleFunc("/shops/{id:[0-9]+}", shopHandler.Update).Methods(http.MethodPut)
+	router.HandleFunc("/shops/{id:[0-9]+}", shopHandler.Delete).Methods(http.MethodDelete)
 
 	serverPort := utils.GetEnv("SERVER_PORT", "8080")
 
